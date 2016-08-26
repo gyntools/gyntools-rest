@@ -3,6 +3,7 @@ package unit.com.github.gyntools.rest;
 import com.github.gyntools.rest.exceptions.api.RestException;
 import com.github.gyntools.rest.handler.RestExceptionMapper;
 import com.github.gyntools.test.AbstractBaseUnitTest;
+import com.jayway.restassured.path.json.JsonPath;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.mock.MockDispatcherFactory;
@@ -49,7 +50,10 @@ public class ClientExceptionTest extends AbstractBaseUnitTest{
         request = MockHttpRequest.get(endpoint);
         dispatcher.invoke(request,response);
         assertEquals(response.getStatus(),expectedStatusCode);
-        logger.infof("Got %s response status code",response.getStatus());
+        JsonPath jsonPath = new JsonPath(response.getContentAsString());
+        String status = jsonPath.getString("status");
+        String message = jsonPath.getString("message");
+        logger.infof("Got %s response status code. Status description: %s. Error message: %s",response.getStatus(),status,message);
     }
 
     @DataProvider(name="arrayStatus")
